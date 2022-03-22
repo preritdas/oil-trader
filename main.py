@@ -59,12 +59,6 @@ def moving_average(interval: int, data: pd.DataFrame = get_data()):
     average = sum(closes)/len(closes)
     return average
 
-if(
-    True == True and
-    False == True
-):
-    print('hi')
-
 def trade_logic():
     # Make position variable global for access in various iterations
     global position
@@ -102,16 +96,18 @@ def main():
     texts.text_me("Oil trader has just been deployed.")
 
     while True:
-        time_hours, time_mins = kit.time_now().split('-')
-        time_hours, time_mins = int(time_hours), int(time_mins)
-        if 6 <= time_hours < 12 and time_mins >= 30 and time_mins % 15 == 0:
+        time_decimal = kit.time_decimal()
+        time_mins = kit.time_now(int_times = True)[1]
+        if 6.75 <= time_decimal < 12.5 and time_mins % 15 == 0:
             # DEBUG
+            print('Oil trader is running trade logic.')
             texts.text_me("Oil trader is running trade logic.")
 
             trade_logic()
             print("An iteration of trading logic has completed. Awaiting next iteration.")
             time.sleep(timeframe * 60)
-        elif time_hours == 12 and 55 < time_mins < 59:
+        elif 12.9 < time_decimal < 13:
+            print("Done trading, sleeping for 5 mins before update.")
             time.sleep(300)
             print("Done trading for the day.")
             texts.text_me(
