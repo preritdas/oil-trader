@@ -1,14 +1,19 @@
-from xml.etree.ElementTree import TreeBuilder
+# Non-local imports
 import alpaca_trade_api as alpaca_api
 import stockstats as ss
-import pandas as pd
-from datetime import datetime as dt
 import mypytoolkit as kit
 
+# Local imports
+import time
+import math
+import pandas as pd
+from datetime import datetime as dt
 import _keys
+import texts
 
 # ---- GLOBAL VARIABLES ----
 symbol = 'USO'
+in_long = 1
 
 # Instantiate Alpaca API
 alpaca = alpaca_api.REST(
@@ -16,6 +21,17 @@ alpaca = alpaca_api.REST(
     secret_key = _keys.alpaca_API_secret,
     base_url = _keys.alpaca_endpoint
 )
+
+def account_performance():
+    account = alpaca.get_account()
+    change = float(account.equity) - float(account.last_equity)
+    return change/float(account.last_equity)
+
+def ideal_quantity(allocation: float = 0.05, symbol: str = symbol):
+    account = alpaca.get_account()
+    value = float(account.equity)
+    ideal_size = value * allocation
+    return math.ceil(ideal_size/current_price())
 
 def current_price(symbol: str = symbol):
     response = alpaca.get_snapshot(symbol = symbol).latest_trade
@@ -42,29 +58,43 @@ def moving_average(interval: int, data: pd.DataFrame = get_data()):
 
 def trade_logic():
     data = get_data()
-    if current_price() > moving_average(interval = 15, data = data) and current_ADX(data = data) > 35:
+    if current_price() > moving_average(interval = 15, data = data) and current_ADX(data = data) > 35 and not in_long:
         # Buy
+        print(f"Taking a trade. Long {symbol}.")
         alpaca.submit_order(
             symbol = symbol,
-            qty = 1,
+            qty = ideal_quantity(allocation = 0.05, symbol = symbol),
             side = 'buy'
         )
         in_long = True
-    elif current_price() < moving_average(interval = 15, data = data) and current_ADX(data = data) > 35:
+    elif current_price() < moving_average(interval = 15, data = data) and current_ADX(data = data) > 35 and in_long:
         # Sell
+        print(f"Taking a trade. Short {symbol}.")
         alpaca.submit_order(
             symbol = symbol,
-            qty = 1,
+            qty = ideal_quantity(allocation = 0.05, symbol = symbol),
             side = "sell"
         )
         in_long = False
 
 def main():
+    print("Oil trader is alive and ready.")
+    texts.text_me("Oil trader has just been deployed.")
     while True:
         time_hours, time_mins = kit.time_now().split('-')
         time_hours, time_mins = int(time_hours), int(time_mins)
-        if time_hours == 6 and time_mins >= 45:
+        if 6 <= time_hours < 12 and time_mins >= 45:
             trade_logic()
+            time.sleep(900)
+        elif time_hours == 12 and 55 < time_mins < 59:
+            time.sleep(300)
+            print("Done trading for the day.")
+            texts.text_me(
+                f"""
+                Oil trader is done for the day. 
+                Today's performance: {account_performance()}. 
+                """
+            )
 
 if __name__ == "__main__":
     main()
