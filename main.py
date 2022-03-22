@@ -25,10 +25,12 @@ alpaca = alpaca_api.REST(
     base_url = _keys.alpaca_endpoint
 )
 
-def account_performance():
+def account_performance(rounding: int):
     account = alpaca.get_account()
     change = float(account.equity) - float(account.last_equity)
-    return change/float(account.last_equity)
+    proportion = change/float(account.last_equity)
+    percent = 100 * proportion
+    return round(percent, rounding)
 
 def ideal_quantity(allocation: float = 0.05, symbol: str = symbol):
     account = alpaca.get_account()
@@ -71,6 +73,7 @@ def trade_logic():
     ):
         # Buy
         print(f"Taking a trade. Long {symbol}.")
+        texts.text_me(f"Oil trader went long on {symbol}.")
         alpaca.submit_order(
             symbol = symbol,
             qty = ideal_quantity(allocation = 0.05, symbol = symbol),
@@ -84,6 +87,7 @@ def trade_logic():
     ):
         # Sell
         print(f"Taking a trade. Short {symbol}.")
+        texts.text_me(f"Oil trader went short on {symbol}.")
         alpaca.submit_order(
             symbol = symbol,
             qty = ideal_quantity(allocation = 0.05, symbol = symbol),
@@ -108,13 +112,10 @@ def main():
             time.sleep(timeframe * 60)
         elif 12.9 < time_decimal < 13:
             print("Done trading, sleeping for 5 mins before update.")
-            time.sleep(300)
+            time.sleep(0.1 * 3600) # so it doesn't run again
             print("Done trading for the day.")
             texts.text_me(
-                f"""
-                Oil trader is done for the day. 
-                Today's performance: {account_performance()}. 
-                """
+                f"Oil trader is done for the day. Today's performance: {account_performance(rounding = 4)}%."
             )
 
 if __name__ == "__main__":
