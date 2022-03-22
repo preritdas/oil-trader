@@ -66,6 +66,9 @@ if(
     print('hi')
 
 def trade_logic():
+    # Make position variable global for access in various iterations
+    global position
+
     data = get_data()
     if(
         current_price() > moving_average(interval = timeframe, data = data) 
@@ -101,7 +104,7 @@ def main():
     while True:
         time_hours, time_mins = kit.time_now().split('-')
         time_hours, time_mins = int(time_hours), int(time_mins)
-        if 6 <= time_hours < 12 and time_mins >= 45:
+        if 6 <= time_hours < 12 and time_mins >= 30 and time_mins % 15 == 0:
             # DEBUG
             texts.text_me("Oil trader is running trade logic.")
 
