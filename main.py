@@ -11,9 +11,12 @@ from datetime import datetime as dt
 import _keys
 import texts
 
-# ---- GLOBAL VARIABLES ----
+# ---- GLOBAL PARAMETERS ----
 symbol = 'USO'
-in_long = 1
+timeframe = 15 # minutes
+
+# Global variables
+position = 'none'
 
 # Instantiate Alpaca API
 alpaca = alpaca_api.REST(
@@ -56,9 +59,19 @@ def moving_average(interval: int, data: pd.DataFrame = get_data()):
     average = sum(closes)/len(closes)
     return average
 
+if(
+    True == True and
+    False == True
+):
+    print('hi')
+
 def trade_logic():
     data = get_data()
-    if current_price() > moving_average(interval = 15, data = data) and current_ADX(data = data) > 35 and not in_long:
+    if(
+        current_price() > moving_average(interval = timeframe, data = data) 
+        and current_ADX(data = data) > 35 
+        and position != 'long'
+    ):
         # Buy
         print(f"Taking a trade. Long {symbol}.")
         alpaca.submit_order(
@@ -66,8 +79,12 @@ def trade_logic():
             qty = ideal_quantity(allocation = 0.05, symbol = symbol),
             side = 'buy'
         )
-        in_long = True
-    elif current_price() < moving_average(interval = 15, data = data) and current_ADX(data = data) > 35 and in_long:
+        position = 'long'
+    elif(
+        current_price() < moving_average(interval = timeframe, data = data) 
+        and current_ADX(data = data) > 35 
+        and position != 'long'
+    ):
         # Sell
         print(f"Taking a trade. Short {symbol}.")
         alpaca.submit_order(
@@ -75,17 +92,19 @@ def trade_logic():
             qty = ideal_quantity(allocation = 0.05, symbol = symbol),
             side = "sell"
         )
-        in_long = False
+        position = 'short'
 
 def main():
     print("Oil trader is alive and ready.")
     texts.text_me("Oil trader has just been deployed.")
+
     while True:
         time_hours, time_mins = kit.time_now().split('-')
         time_hours, time_mins = int(time_hours), int(time_mins)
         if 6 <= time_hours < 12 and time_mins >= 45:
             trade_logic()
-            time.sleep(900)
+            print("An iteration of trading logic has completed. Awaiting next iteration.")
+            time.sleep(timeframe * 60)
         elif time_hours == 12 and 55 < time_mins < 59:
             time.sleep(300)
             print("Done trading for the day.")
@@ -97,4 +116,4 @@ def main():
             )
 
 if __name__ == "__main__":
-    main()
+    pass
