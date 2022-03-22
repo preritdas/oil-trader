@@ -95,13 +95,16 @@ def trade_logic():
         position = 'short'
 
 def main():
-    print("Oil trader is alive and ready.")
+    print("Oil trader is alive and ready for action.")
     texts.text_me("Oil trader has just been deployed.")
 
     while True:
         time_hours, time_mins = kit.time_now().split('-')
         time_hours, time_mins = int(time_hours), int(time_mins)
         if 6 <= time_hours < 12 and time_mins >= 45:
+            # DEBUG
+            texts.text_me("Oil trader is running trade logic.")
+
             trade_logic()
             print("An iteration of trading logic has completed. Awaiting next iteration.")
             time.sleep(timeframe * 60)
@@ -116,4 +119,4 @@ def main():
             )
 
 if __name__ == "__main__":
-    pass
+    main()
