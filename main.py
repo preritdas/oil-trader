@@ -10,6 +10,7 @@ import pandas as pd
 from datetime import datetime as dt
 import _keys
 import texts
+import multiprocessing as mp
 
 # ---- GLOBAL PARAMETERS ----
 symbol = 'USO'
@@ -74,11 +75,15 @@ def trade_logic():
         # Buy
         print(f"Taking a trade. Long {symbol}.")
         texts.text_me(f"Oil trader went long on {symbol}.")
-        alpaca.submit_order(
-            symbol = symbol,
-            qty = ideal_quantity(allocation = 0.05, symbol = symbol),
-            side = 'buy'
-        )
+        # Multiprocessing
+        def buy_order():
+            alpaca.submit_order(
+                symbol = symbol,
+                qty = ideal_quantity(allocation = 0.05, symbol = symbol),
+                side = 'buy'
+            )
+        mp.Process(target = buy_order).start()
+
         position = 'long'
     elif(
         current_price() < moving_average(interval = timeframe, data = data) 
@@ -88,11 +93,15 @@ def trade_logic():
         # Sell
         print(f"Taking a trade. Short {symbol}.")
         texts.text_me(f"Oil trader went short on {symbol}.")
-        alpaca.submit_order(
-            symbol = symbol,
-            qty = ideal_quantity(allocation = 0.05, symbol = symbol),
-            side = "sell"
-        )
+        # Multiprocessing
+        def sell_order():
+            alpaca.submit_order(
+                symbol = symbol,
+                qty = ideal_quantity(allocation = 0.05, symbol = symbol),
+                side = "sell"
+            )
+        mp.Process(target = sell_order).start()
+        
         position = 'short'
 
 def main():
