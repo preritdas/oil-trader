@@ -2,15 +2,15 @@
 import alpaca_trade_api as alpaca_api
 import stockstats as ss
 import mypytoolkit as kit
+import pandas as pd
 
 # Local imports
 import time
 import math
-import pandas as pd
-from datetime import datetime as dt
 import _keys
 import texts
 import multiprocessing as mp
+import os
 
 # ---- GLOBAL PARAMETERS ----
 symbol = 'USO'
@@ -32,6 +32,15 @@ def account_performance(rounding: int):
     proportion = change/float(account.last_equity)
     percent = 100 * proportion
     return round(percent, rounding)
+
+def store_performance():
+    performance = account_performance(rounding = 4)/100
+    if not os.path.isfile('Data/performance.csv'):
+        with open('Data/performance.csv', 'a') as f:
+            f.write(f'{kit.today_date()},{performance}')
+    else:
+        with open('Data/performance.csv', 'a') as f:
+            f.write(f'\n{kit.today_date()},{performance}')
 
 def ideal_quantity(allocation: float = 0.05, symbol: str = symbol):
     account = alpaca.get_account()
@@ -101,7 +110,7 @@ def trade_logic():
                 side = "sell"
             )
         mp.Process(target = sell_order).start()
-        
+
         position = 'short'
 
 def main():
@@ -115,17 +124,21 @@ def main():
             # DEBUG
             print('Oil trader is running trade logic.')
             texts.text_me("Oil trader is running trade logic.")
-
-            trade_logic()
+            
+            # Multiprocess the trade logic so as not to mess up timing
+            mp.Process(target = trade_logic).start()
             print("An iteration of trading logic has completed. Awaiting next iteration.")
             time.sleep(timeframe * 60)
-        elif 12.9 < time_decimal < 13:
+        elif 17 < time_decimal < 18:
             print("Done trading, sleeping for 5 mins before update.")
             time.sleep(0.1 * 3600) # so it doesn't run again
             print("Done trading for the day.")
             texts.text_me(
                 f"Oil trader is done for the day. Today's performance: {account_performance(rounding = 4)}%."
             )
+
+            # Update account performance with multiprocessing
+            mp.Process(target = store_performance).start()
 
 if __name__ == "__main__":
     main()
