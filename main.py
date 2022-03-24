@@ -18,6 +18,7 @@ timeframe = 15 # minutes
 
 # Global variables
 position = 'none'
+alerted_me = False
 
 # Instantiate Alpaca API
 alpaca = alpaca_api.REST(
@@ -34,7 +35,7 @@ def account_performance(rounding: int):
     return round(percent, rounding)
 
 def store_performance():
-    performance = account_performance(rounding = 4)/100
+    performance = account_performance(rounding = 4)
     if not os.path.isfile('Data/performance.csv'):
         with open('Data/performance.csv', 'a') as f:
             f.write(f'{kit.today_date()},{performance}')
@@ -114,28 +115,35 @@ def trade_logic():
         position = 'short'
 
 def main():
+    # Make alerted_me variable global
+    global alerted_me
+
     print("Oil trader is alive and ready for action.")
-    texts.text_me("Oil trader has just been deployed.")
 
     while True:
         time_decimal = kit.time_decimal()
         time_mins = kit.time_now(int_times = True)[1]
-        if 6.75 <= time_decimal < 12.5 and time_mins % 15 == 0:
+        if 6.75 <= time_decimal < 12.75 and time_mins % 15 == 0:
             # DEBUG
             print('Oil trader is running trade logic.')
-            texts.text_me("Oil trader is running trade logic.")
+            # inform me of being alive in morning
+            if alerted_me == False:
+                texts.text_me("Oil trader is running trade logic.")
+            alerted_me = True
             
             # Multiprocess the trade logic so as not to mess up timing
             mp.Process(target = trade_logic).start()
             print("An iteration of trading logic has completed. Awaiting next iteration.")
-            time.sleep(timeframe * 60)
-        elif 17 < time_decimal < 18:
+            time.sleep(60) # time_mins % 60 will ensure this won't re-run
+        elif 12.9 < time_decimal < 13:
             print("Done trading, sleeping for 5 mins before update.")
             time.sleep(0.1 * 3600) # so it doesn't run again
             print("Done trading for the day.")
-            texts.text_me(
+            text_response = texts.text_me(
                 f"Oil trader is done for the day. Today's performance: {account_performance(rounding = 4)}%."
             )
+            # Message delivery success
+            print("Update has been sent successfully." if text_response else "Unsuccessful delivery.")
 
             # Update account performance with multiprocessing
             mp.Process(target = store_performance).start()
