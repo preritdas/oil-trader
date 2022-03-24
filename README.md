@@ -52,17 +52,17 @@ Because it sleeps for six minutes before executing the updates protocol, acciden
 
 ### Overall Independence
 
-The program does not have to be re-run every day (except for weekends: as of 03-24-2022, there is no protocol for sleeping through weekends). It will automatically run updates when necessary and sleep until the market opens the next morning. 
+The program does not have to be re-run every day. It will automatically run updates when necessary and sleep until the market opens the next morning. It can be left running over weekends, too, because Oil Trader uses the `get_clock()` method from Alpaca to determine if the market is open before proceeding with the trade logic. 
 
 ## File Structure
 
 Below is information on each file in the repository: what it does, how it works, and how to use it. An element missing from the section below is the `Data/` subdirectory which is necessary for `store_performance()` to work. Currently there is no protocol for creating the subdirectory itself if it doesn't exist, only the `performance.csv` file within the subdirectory. If you don't have a `Data/` subdirectory the program will crash at the end of the day with a `FileNotFoundError`. The subdirectory can (and probably should) be empty. Allow the program to populate it with data.
 
-### `main.py`
+### main.py
 
 The execution program. Run the program using `python main.py` and as long as all necessary dependencies are present (keys, modules, etc.) no errors will arise. 
 
-### `texts.py`
+### texts.py
 
 The texting module. It uses the Nexmo SDK to create a few functions that are used in `main.py` to alert the user of various events. 
 

@@ -124,7 +124,7 @@ def main():
     while True:
         time_decimal = kit.time_decimal()
         time_mins = kit.time_now(int_times = True)[1]
-        if 6.75 <= time_decimal < 12.75 and time_mins % 15 == 0:
+        if alpaca.get_clock().is_open and 6.75 <= time_decimal < 12.75 and time_mins % 15 == 0:
             # DEBUG
             print('Oil trader is running trade logic.')
             # inform me of being alive in morning
