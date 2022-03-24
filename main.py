@@ -15,6 +15,7 @@ import os
 # ---- GLOBAL PARAMETERS ----
 symbol = 'USO'
 timeframe = 15 # minutes
+ideal_allocation = 0.05 # position size
 
 # Global variables
 position = 'none'
@@ -43,11 +44,11 @@ def store_performance():
         with open('Data/performance.csv', 'a') as f:
             f.write(f'\n{kit.today_date()},{performance}')
 
-def ideal_quantity(allocation: float = 0.05, symbol: str = symbol):
+def ideal_quantity(allocation: float = ideal_allocation, symbol: str = symbol):
     account = alpaca.get_account()
     value = float(account.equity)
     ideal_size = value * allocation
-    return math.ceil(ideal_size/current_price())
+    return math.ceil(ideal_size/current_price(symbol = symbol))
 
 def current_price(symbol: str = symbol):
     response = alpaca.get_snapshot(symbol = symbol).latest_trade
@@ -144,6 +145,9 @@ def main():
             )
             # Message delivery success
             print("Update has been sent successfully." if text_response else "Unsuccessful delivery.")
+
+            # Change alerted_me so it alerts next morning
+            alerted_me = False
 
             # Update account performance with multiprocessing
             mp.Process(target = store_performance).start()
