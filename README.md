@@ -53,3 +53,66 @@ Because it sleeps for six minutes before executing the updates protocol, acciden
 ### Overall Independence
 
 The program does not have to be re-run every day (except for weekends: as of 03-24-2022, there is no protocol for sleeping through weekends). It will automatically run updates when necessary and sleep until the market opens the next morning. 
+
+## File Structure
+
+Below is information on each file in the repository: what it does, how it works, and how to use it. An element missing from the section below is the `Data/` subdirectory which is necessary for `store_performance()` to work. Currently there is no protocol for creating the subdirectory itself if it doesn't exist, only the `performance.csv` file within the subdirectory. If you don't have a `Data/` subdirectory the program will crash at the end of the day with a `FileNotFoundError`. The subdirectory can (and probably should) be empty. Allow the program to populate it with data.
+
+### `main.py`
+
+The execution program. Run the program using `python main.py` and as long as all necessary dependencies are present (keys, modules, etc.) no errors will arise. 
+
+### `texts.py`
+
+The texting module. It uses the Nexmo SDK to create a few functions that are used in `main.py` to alert the user of various events. 
+
+```python
+## texts.py usage 
+
+text_success = texts.text_me("Hello.") # returns a bool
+print("Successful delivery" if text_success else "Failed.")
+
+# Or...
+if text_success:
+    print("Successful delivery.")
+else:
+    print("Failed delivery.")
+```
+
+This works because the `texts.text_me()` function is written to return a boolean of whether the message went through. It calls Nexmo's API and checks for the first message send (usually there is only one unless a long message is divided into multiple deliveries). If the result is a `'0'` it returns `True`, otherwise it returns `False`. This simplicity allows for a simple success check as shown above.
+
+### requirements.txt
+
+All the Python requirements for this program to execute. Create a virtual environment, source the environment, and install all the dependencies using these commands. 
+
+On Mac/Linux:
+```shell
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+On Windows:
+```shell
+python -m venv venv
+venv/Scripts/activate
+pip install -r requirements.txt
+```
+
+### _keys.py
+
+This is not included in the repository for obvious reasons but **is a required file for the program to work**. The `_keys.py` file **must** contain the following contents labeled in the same way such that `main.py` and `texts.py` can access the variables as written.
+
+_keys.py
+```python
+# Alpaca
+alpaca_endpoint = 'alpacaBaseUrl'
+alpaca_API_key = 'alpacaAPIkey'
+alpaca_API_secret = 'alpacaSecretKey'
+
+# Nexmo
+nexmo_api_key = 'nexmoAPIKey'
+nexmo_api_secret = 'nexmoSecretKey'
+nexmo_sender = 'nexmoRegisteredSenderNumber'
+nexmo_my_number = 'userPhoneNumber'
+```
