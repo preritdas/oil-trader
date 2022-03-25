@@ -20,6 +20,7 @@ ideal_allocation = 0.05 # position size
 # Global variables
 position = 'none'
 alerted_me = False
+market_clock_set = 8 # non weekday value
 
 # Instantiate Alpaca API
 alpaca = alpaca_api.REST(
@@ -119,19 +120,26 @@ def main():
     # Make alerted_me variable global
     global alerted_me
 
+    # Deployment message
     print("Oil trader is alive and ready for action.")
 
     while True:
         time_decimal = kit.time_decimal()
         time_mins = kit.time_now(int_times = True)[1]
-        if alpaca.get_clock().is_open and 6.75 <= time_decimal < 12.75 and time_mins % 15 == 0:
+        if 6.75 <= time_decimal < 12.75 and time_mins % 15 == 0:
             # DEBUG
             print('Oil trader is running trade logic.')
-            # inform me of being alive in morning
+
+            # Alpaca clock with limited API calls (once per unique day)
+            if market_clock_set != kit.weekday_int():
+                market_clock_set = kit.weekday_int()
+                if not alpaca.get_clock().is_open:
+                    continue
+
+            # inform me of being alive in the morning
             if alerted_me == False:
                 texts.text_me("Oil trader is running trade logic.")
             alerted_me = True
-            
             # Multiprocess the trade logic so as not to mess up timing
             mp.Process(target = trade_logic).start()
             print("An iteration of trading logic has completed. Awaiting next iteration.")

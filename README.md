@@ -54,6 +54,10 @@ Because it sleeps for six minutes before executing the updates protocol, acciden
 
 The program does not have to be re-run every day. It will automatically run updates when necessary and sleep until the market opens the next morning. It can be left running over weekends, too, because Oil Trader uses the `get_clock()` method from Alpaca to determine if the market is open before proceeding with the trade logic. 
 
+### Smart Clock API Management
+
+Unfortunately, Alpaca's `get_clock()` method counts towards the API rate limit. In order to prevent this method from being called every trade logic iteration, Oil Trader will only check the clock once per day during standard market hours. The purpose of this method in this program is not to directly check if the market is open; rather, to see if the day is a market holiday or if the market is closed for any extraneous reason. 
+
 ## File Structure
 
 Below is information on each file in the repository: what it does, how it works, and how to use it. An element missing from the section below is the `Data/` subdirectory which is necessary for `store_performance()` to work. Currently there is no protocol for creating the subdirectory itself if it doesn't exist, only the `performance.csv` file within the subdirectory. If you don't have a `Data/` subdirectory the program will crash at the end of the day with a `FileNotFoundError`. The subdirectory can (and probably should) be empty. Allow the program to populate it with data.
