@@ -146,7 +146,6 @@ def main():
                 market_open = alpaca.get_clock().is_open
             # If market is closed, don't do the 'market is open' logic.
             if not market_open:
-                print("Market closed. Re-iterating.")
                 continue
 
             # MAIN PROGRAM MARKET IS OPEN.
