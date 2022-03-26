@@ -91,12 +91,18 @@ def trade_logic():
         def buy_order():
             alpaca.submit_order(
                 symbol = symbol,
-                qty = ideal_quantity(allocation = 0.05, symbol = symbol),
+                qty = ideal_quantity(),
                 side = 'buy'
             )
         mp.Process(target = buy_order).start()
 
-        position = 'long'
+        # Position management
+        if position == 'none' or position == 'zero':
+            position = 'long'
+        elif position == 'short':
+            position = 'zero'
+        else:
+            raise Exception(f"Unknown position case, long, where {position = }.")
     elif(
         current_price() < moving_average(interval = timeframe, data = data) 
         and current_ADX(data = data) > 35 
@@ -109,12 +115,18 @@ def trade_logic():
         def sell_order():
             alpaca.submit_order(
                 symbol = symbol,
-                qty = ideal_quantity(allocation = 0.05, symbol = symbol),
+                qty = ideal_quantity(),
                 side = "sell"
             )
         mp.Process(target = sell_order).start()
 
-        position = 'short'
+        # Position management
+        if position == 'none' or position == 'zero':
+            position = 'short'
+        elif position == 'long':
+            position == 'zero'
+        else:
+            raise Exception(f"Unrecognized position case, short, where {position = }.") 
 
 def main():
     # Make alerted_me variable global

@@ -34,6 +34,12 @@ ideal_allocation = 0.05 # position size
 
 This is not rigid. Every time the program runs through an iteration of `trade_logic()`, it recalculates the ideal position size (rounded up). So, if the account rises in value by enough to change the positional size, the program will reflect that change mid-day. The same is true vice versa, if the account loses value. This prevents losses from spiraling out of control while allowing the account's growth to potentially be exponential, not just linear.
 
+### Smart Position Management
+
+Oil Trader was designed to only ever be short, neutral, or long by one position of ideal quantity. It doesn't stack positions. It's important for Oil Trader to be able to take two buy orders in a row if it started short, for example, but prevent it from going long more than once. It can buy to close a short and enter a buy, but it cannot buy twice to go long twice.
+
+This is achieved by giving it multiple states. Oil Trader's `position` can be `'none'` on deployment, `'long'`, '`short'`, or '`zero'` if it was in a long/short and was closed by an alternate order.
+
 ### ADX Calculation
 
 Oil Trader uses the `stockstats` library to aid in its calculation of current ADX. It gets live-historical data from Alpaca (calling historical data from the current minute as opposed to using a websocket). It outputs the latest ADX value (by minute). The `timeframe` from global parameters has no influence on this value.
