@@ -1,6 +1,7 @@
 # Oil Trader
 
 Note: The code for this project is currently private and will remain private until I retire the bot. All files will be available in this [GitHub Repository](https://github.com/preritdas/Oil-Trader).
+
 ----
 
 Oil Trader is a `$USO`-centered trading bot that currently corroborates average price movement with ADX. 
