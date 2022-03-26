@@ -139,14 +139,17 @@ def main():
         time_decimal = kit.time_decimal()
         time_mins = kit.time_now(int_times = True)[1]
         if 6.75 <= time_decimal < 12.75 and time_mins % 15 == 0:
-            # DEBUG
-            print('Oil trader is running trade logic.')
-
             # Alpaca clock with limited API calls (once per unique day)
             if market_clock_set != kit.weekday_int():
                 market_clock_set = kit.weekday_int()
-                if not alpaca.get_clock().is_open:
-                    continue
+                market_open = alpaca.get_clock().is_open
+            # If market is closed, don't do the 'market is open' logic.
+            if not market_open:
+                print("Market closed. Re-iterating.")
+                continue
+
+            # MAIN PROGRAM MARKET IS OPEN.
+            print('Oil trader is running trade logic.')
 
             # inform me of being alive in the morning
             if alerted_me == False:
