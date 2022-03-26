@@ -1,6 +1,11 @@
 # Oil Trader
 
-Oil Trader is a `$USO`-centered trading bot that currently corroborates average price movement with ADX. This is merely placeholder trading logic and will eventually be replaced with a comprehensive machine-learning powered strategy. Models will be computed in unique multiprocesses each day. They'll be used to make indicator predictions whose statistical significance and weighting will power the decision to buy, sell, add, or wait.
+Note: The code for this project is currently private and will remain private until I retire the bot. All files will be available in this [GitHub Repository](https://github.com/preritdas/Oil-Trader).
+----
+
+Oil Trader is a `$USO`-centered trading bot that currently corroborates average price movement with ADX. 
+
+This is merely placeholder trading logic and will eventually be replaced with a comprehensive machine-learning powered strategy. Models will be computed in unique multiprocesses each day. They'll be used to make indicator predictions whose statistical significance and weighting will power the decision to buy, sell, add, or wait.
 
 ## Features
 
