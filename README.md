@@ -12,6 +12,22 @@ This is merely placeholder trading logic and will eventually be replaced with a 
 
 Oil Trader's features come in the form of locally defined functions and submodules. Some of them are independent while some call other local functions with default parameters. It's important to understand the behavior of each of these feature functions because they are frequently called within the program, and slight variations in their parameters can have severe differences in their behavior.
 
+### Smart Text Alerts
+
+The `texts.py` module has a method, `text_me()`, which has some parameters that make repeated alerts a breeze. The core structure is:
+
+```python
+texts.text_me(message: str, alert_once: bool = False, alert_once_override: bool = False)
+```
+
+Thus, within `main.py`, you can create a text alert that won't be repeatedly messaged in following iterations. For example: 
+
+```python
+texts.text_me("The bot has been deployed.", alert_once = True)
+```
+
+If you, for any reason, want to forcibly alert something that has already been sent with the `alert_once = True` parameter, set `alert_once_override = True` and the message will deliver even if it exists in the database of delivered messages. 
+
 ### Account Performance
 
 `account_performance()` allows the bot to automatically calculate how well the underlying account (based on Alpaca API keys) has done in that day and append the data to a CSV file (Data/performance.csv) using `store_performance()`. If the file does not exist, it will create the file. Note that `store_performance()` calls `account_performance()` with a default parameter of `rounding = 4`. 
