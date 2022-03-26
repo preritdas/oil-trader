@@ -159,7 +159,7 @@ def main():
             mp.Process(target = trade_logic).start()
             print("An iteration of trading logic has completed. Awaiting next iteration.")
             time.sleep(60) # time_mins % 60 will ensure this won't re-run
-        elif 12.9 < time_decimal < 13:
+        elif 12.9 < time_decimal < 13 and not market_open:
             print("Done trading, sleeping for 5 mins before update.")
             time.sleep(0.1 * 3600) # so it doesn't run again
             print("Done trading for the day.")
