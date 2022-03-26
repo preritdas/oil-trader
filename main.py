@@ -129,8 +129,9 @@ def trade_logic():
             raise Exception(f"Unrecognized position case, short, where {position = }.") 
 
 def main():
-    # Make alerted_me variable global
+    # Make alerted_me and market_clock_set variables global
     global alerted_me
+    global market_clock_set
 
     # Deployment message
     print("Oil trader is alive and ready for action.")
