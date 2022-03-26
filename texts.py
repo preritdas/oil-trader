@@ -13,6 +13,8 @@ sms = nexmo.Sms(client = nexmo_client)
 already_texted = []
 
 def text_me(message: str, alert_once: bool = False, alert_once_override: bool = False):
+    global already_texted
+
     if message not in already_texted and alert_once_override == False:
         response = sms.send_message(
             {
@@ -22,8 +24,7 @@ def text_me(message: str, alert_once: bool = False, alert_once_override: bool = 
             }
         )
 
-    # Alert_once
-    global already_texted
+    # Alert_once logic
     if alert_once:
         already_texted.append(message)
 
