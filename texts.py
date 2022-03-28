@@ -1,12 +1,16 @@
+# Non-local imports
 import nexmo
 
+# Local imports
 import _keys
 
+# Instantiate Nexmo client
 nexmo_client = nexmo.Client(
     key = _keys.nexmo_api_key,
     secret = _keys.nexmo_api_secret 
 )
 
+# Instantiate sms object
 sms = nexmo.Sms(client = nexmo_client)
 
 # For alert_once. Already texted strings

@@ -30,6 +30,10 @@ alpaca = alpaca_api.REST(
 )
 
 def account_performance(rounding: int):
+    """
+    Returns a rounded percentage value of the account's performance.
+    If the account is up 1.23456%, and rounding = 3, it will return 1.234.
+    """
     account = alpaca.get_account()
     change = float(account.equity) - float(account.last_equity)
     proportion = change/float(account.last_equity)
@@ -37,25 +41,41 @@ def account_performance(rounding: int):
     return round(percent, rounding)
 
 def store_performance():
+    """
+    Finds (creates if non-existent) a performance.csv file to write \
+        account performance to every day.
+    """
     performance = account_performance(rounding = 4)
     if not os.path.isfile('Data/performance.csv'):
         with open('Data/performance.csv', 'a') as f:
+            # Create the file and write without a new line
             f.write(f'{kit.today_date()},{performance}')
     else:
         with open('Data/performance.csv', 'a') as f:
+            # Write with a new line
             f.write(f'\n{kit.today_date()},{performance}')
 
 def ideal_quantity(allocation: float = ideal_allocation, symbol: str = symbol):
+    """
+    Calculates the ideal position quantity based on allocation and symbol.
+    All args are optional. By default, it uses global parameter's symbol\
+        and allocation.
+    """
     account = alpaca.get_account()
     value = float(account.equity)
     ideal_size = value * allocation
     return math.ceil(ideal_size/current_price(symbol = symbol))
 
 def current_price(symbol: str = symbol):
+    """
+    Returns a float of the current price of a symbol using the Alpaca API.
+    Args are optional; by default, symbol is taken from global parameters.
+    """
     response = alpaca.get_snapshot(symbol = symbol).latest_trade
     return float(response.p)
 
 def get_data():
+    """Gets a DataFrame of stock data from Alpaca's API."""
     barset = alpaca.get_bars(
         symbol = symbol,
         timeframe = alpaca_api.TimeFrame.Minute,
@@ -63,22 +83,35 @@ def get_data():
     return barset.df
 
 def current_ADX(data: pd.DataFrame = get_data()):
+    """
+    Uses stockstats to calculate the current ADX when given a data DataFrame.
+    data argument is optional; by default, uses the get_data function.
+    """
     data = ss.StockDataFrame.retype(data)
     adx = data[["adx"]]
     current_row = adx.iloc[len(data) - 1]
     return float(current_row[0])
 
 def moving_average(interval: int, data: pd.DataFrame = get_data()):
+    """
+    Locally calculates a 'tailed average' (explained in the read-me) \
+        when given data. By default, data DataFrame is taken using get_data.
+    """
     working_data = data.tail(interval)
     closes = list(working_data['close'])
     average = sum(closes)/len(closes)
     return average
 
-def trade_logic():
+def trade_logic(data: pd.DataFrame = get_data()):
+    """
+    Takes in a DataFrame (by default, comes from the get_data function) \
+        and makes buy and sell decisions. Uses multiprocessing to submit \
+        orders. All parameters are taken from global parameters or the \
+        outputs of other functions.
+    """
     # Make position variable global for access in various iterations
     global position
 
-    data = get_data()
     if(
         current_price() > moving_average(interval = timeframe, data = data) 
         and current_ADX(data = data) > 35 
@@ -102,7 +135,9 @@ def trade_logic():
         elif position == 'short':
             position = 'zero'
         else:
-            raise Exception(f"Unknown position case, long, where {position = }.")
+            raise Exception(
+                f"Unknown position case, long, where {position = }."
+            )
     elif(
         current_price() < moving_average(interval = timeframe, data = data) 
         and current_ADX(data = data) > 35 
@@ -126,9 +161,13 @@ def trade_logic():
         elif position == 'long':
             position == 'zero'
         else:
-            raise Exception(f"Unrecognized position case, short, where {position = }.") 
+            raise Exception(
+                f"Unrecognized position case, short, where {position = }."
+            ) 
 
 def main():
+    """Main execution function. Takes no parameters."""
+
     # Make alerted_me and market_clock_set variables global
     global alerted_me
     global market_clock_set
@@ -163,11 +202,15 @@ def main():
             print("Done trading, sleeping for 5 mins before update.")
             time.sleep(0.1 * 3600) # so it doesn't run again
             print("Done trading for the day.")
-            text_response = texts.text_me(
-                f"Oil trader is done for the day. Today's performance: {account_performance(rounding = 4)}%."
+            text_success = texts.text_me(
+                f"Oil trader is done for the day. Today's performance: \
+                    {account_performance(rounding = 4)}%."
             )
             # Message delivery success
-            print("Update has been sent successfully." if text_response else "Unsuccessful delivery.")
+            if text_success: 
+                print("Update has been sent successfully.") 
+            else:
+                print("Unsuccessful delivery.")
 
             # Change alerted_me so it alerts next morning
             alerted_me = False
