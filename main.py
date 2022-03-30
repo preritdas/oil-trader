@@ -18,7 +18,7 @@ timeframe = 15 # minutes
 ideal_allocation = 0.05 # position size
 
 # Global variables
-position = 'none'
+position = 0
 alerted_me = False
 market_clock_set = 8 # non weekday value
 
@@ -115,7 +115,7 @@ def trade_logic(data: pd.DataFrame = get_data()):
     if(
         current_price() > moving_average(interval = timeframe, data = data) 
         and current_ADX(data = data) > 35 
-        and position != 'long'
+        and position < 1
     ):
         # Buy
         print(f"Taking a trade. Long {symbol}.")
@@ -130,18 +130,12 @@ def trade_logic(data: pd.DataFrame = get_data()):
         mp.Process(target = buy_order).start()
 
         # Position management
-        if position == 'none' or position == 'zero':
-            position = 'long'
-        elif position == 'short':
-            position = 'zero'
-        else:
-            raise Exception(
-                f"Unknown position case, long, where {position = }."
-            )
+        position += 1
+
     elif(
         current_price() < moving_average(interval = timeframe, data = data) 
         and current_ADX(data = data) > 35 
-        and position != 'long'
+        and position > -1
     ):
         # Sell
         print(f"Taking a trade. Short {symbol}.")
@@ -156,14 +150,7 @@ def trade_logic(data: pd.DataFrame = get_data()):
         mp.Process(target = sell_order).start()
 
         # Position management
-        if position == 'none' or position == 'zero':
-            position = 'short'
-        elif position == 'long':
-            position == 'zero'
-        else:
-            raise Exception(
-                f"Unrecognized position case, short, where {position = }."
-            ) 
+        position -= 1
 
 def main():
     """Main execution function. Takes no parameters."""
@@ -194,11 +181,16 @@ def main():
             if alerted_me == False:
                 texts.text_me("Oil trader is running trade logic.")
             alerted_me = True
+
             # Multiprocess the trade logic so as not to mess up timing
             mp.Process(target = trade_logic).start()
             print("An iteration of trading logic has completed. Awaiting next iteration.")
             time.sleep(60) # time_mins % 60 will ensure this won't re-run
-        elif 12.9 < time_decimal < 13 and not market_open:
+        elif 12.9 < time_decimal < 13 and market_open:
+            # Close all positions
+            alpaca.close_all_positions()
+            position = 0
+
             print("Done trading, sleeping for 5 mins before update.")
             time.sleep(0.1 * 3600) # so it doesn't run again
             print("Done trading for the day.")
