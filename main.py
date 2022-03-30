@@ -102,6 +102,17 @@ def moving_average(interval: int, data: pd.DataFrame = get_data()):
     average = sum(closes)/len(closes)
     return average
 
+def bot_status():
+    """Uses position variable to determine if the bot is long, short, or flat."""
+    if position == 0:
+        return "flat"
+    elif position < 0:
+        return f'short {position * -1}'
+    elif position > 0:
+        return f'long {position}'
+    else:
+        return 'position error in bot_status function.'
+
 def trade_logic(data: pd.DataFrame = get_data()):
     """
     Takes in a DataFrame (by default, comes from the get_data function) \
@@ -185,6 +196,8 @@ def main():
             # Multiprocess the trade logic so as not to mess up timing
             mp.Process(target = trade_logic).start()
             print("An iteration of trading logic has completed. Awaiting next iteration.")
+            # Print bot status
+            print(f"Oil Trader is currently {bot_status()}.")
             time.sleep(60) # time_mins % 60 will ensure this won't re-run
         elif 12.9 < time_decimal < 13 and market_open:
             # Close all positions
