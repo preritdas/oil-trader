@@ -8,7 +8,7 @@ Oil Trader is a `$USO`-centered trading bot that currently corroborates average 
 
 This is merely placeholder trading logic and will eventually be replaced with a comprehensive machine-learning powered strategy. Models will be computed in unique multiprocesses each day. They'll be used to make indicator predictions whose statistical significance and weighting will power the decision to buy, sell, add, or wait.
 
-See a demonstration of Oil Trader in action:
+See a bare-bones demonstration of Oil Trader in action (cut off before market update sequence):
 
 [![asciicast](https://asciinema.org/a/XCBYvwjtycxdV43fKiMdsbFku.svg)](https://asciinema.org/a/XCBYvwjtycxdV43fKiMdsbFku)
 
