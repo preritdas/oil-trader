@@ -42,7 +42,7 @@ def account_performance(rounding: int):
 
 def store_performance():
     """
-    Finds (creates if non-existent) a performance.csv file to write \
+    Finds (creates if non-existent) a performance.csv file to write 
         account performance to every day.
     """
     performance = account_performance(rounding = 4)
@@ -58,7 +58,7 @@ def store_performance():
 def ideal_quantity(allocation: float = ideal_allocation, symbol: str = symbol):
     """
     Calculates the ideal position quantity based on allocation and symbol.
-    All args are optional. By default, it uses global parameter's symbol\
+    All args are optional. By default, it uses global parameter's symbol
         and allocation.
     """
     account = alpaca.get_account()
@@ -74,8 +74,12 @@ def current_price(symbol: str = symbol):
     response = alpaca.get_snapshot(symbol = symbol).latest_trade
     return float(response.p)
 
-def get_data():
-    """Gets a DataFrame of stock data from Alpaca's API."""
+def get_data(symbol: str = symbol):
+    """
+    Gets a DataFrame of stock data from Alpaca's API.
+    Takes symbol parameter which defaults to the symbol
+        from the global parameter.
+    """
     barset = alpaca.get_bars(
         symbol = symbol,
         timeframe = alpaca_api.TimeFrame.Minute,
@@ -94,7 +98,7 @@ def current_ADX(data: pd.DataFrame = get_data()):
 
 def moving_average(interval: int, data: pd.DataFrame = get_data()):
     """
-    Locally calculates a 'tailed average' (explained in the read-me) \
+    Locally calculates a 'tailed average' (explained in the read-me) 
         when given data. By default, data DataFrame is taken using get_data.
     """
     working_data = data.tail(interval)
@@ -115,9 +119,9 @@ def bot_status():
 
 def trade_logic(data: pd.DataFrame = get_data()):
     """
-    Takes in a DataFrame (by default, comes from the get_data function) \
-        and makes buy and sell decisions. Uses multiprocessing to submit \
-        orders. All parameters are taken from global parameters or the \
+    Takes in a DataFrame (by default, comes from the get_data function)
+        and makes buy and sell decisions. Uses multiprocessing to submit
+        orders. All parameters are taken from global parameters or the
         outputs of other functions.
     """
     # Make position variable global for access in various iterations
