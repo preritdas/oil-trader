@@ -76,13 +76,20 @@ def current_price(symbol: str = symbol):
 
 def get_data(symbol: str = symbol):
     """
-    Gets a DataFrame of stock data from Alpaca's API.
+    Gets a DataFrame of stock minute data from Alpaca's API.
     Takes symbol parameter which defaults to the symbol
         from the global parameter.
     """
+    # Set the timeframe
+    minute_timeframe = alpaca_api.TimeFrame(
+        amount = 1, 
+        unit = alpaca_api.TimeFrameUnit.Minute
+    )
+    
+    # Get data
     barset = alpaca.get_bars(
         symbol = symbol,
-        timeframe = alpaca_api.TimeFrame.Minute,
+        timeframe = minute_timeframe,
     )
     return barset.df
 
