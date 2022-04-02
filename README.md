@@ -16,6 +16,8 @@ See a bare-bones demonstration of Oil Trader in action (cut off before market up
 
 Oil Trader's features come in the form of locally defined functions and submodules. Some of them are independent while some call other local functions with default parameters. It's important to understand the behavior of each of these feature functions because they are frequently called within the program, and slight variations in their parameters can have severe differences in their behavior.
 
+An important note is the use of default parameters in Oil Trader's source code. The only variables and objects that should be given to a function as a default parameter are global parameters. All others that are calculated, such as `get_data() --> pd.DataFrame`, should be calculated within the actual function such that the data is updated across iterations. In Python, default parameters are calculated only once on function declaration, so if a default parameter is set as `data: pd.DataFrame = get_data()`, Oil Trader's data will never be updated. 
+
 ### Smart Text Alerts
 
 The `texts.py` module has a method, `text_me()`, which has some parameters that make repeated alerts a breeze. The core structure is:
@@ -64,6 +66,12 @@ ideal_allocation = 0.05 # position size
 ```
 
 This is not rigid. Every time the program runs through an iteration of `trade_logic()`, it recalculates the ideal position size (rounded up). So, if the account rises in value by enough to change the positional size, the program will reflect that change mid-day. The same is true vice versa, if the account loses value. This prevents losses from spiraling out of control while allowing the account's growth to potentially be exponential, not just linear.
+
+| Parameter | Behavior | Default Value |
+| --- | --- | --- |
+| `symbol` | The symbol read and traded. | Defaults to 'USO', a U.S. oil ETF. |
+| `timeframe` | The interval on which the tail moving average is calculated. | 15 minutes. |
+| `ideal_allocation` | The size of each position in reference to the account. | `0.05` or 5% of the account. |
 
 ### Smart Position Management
 
