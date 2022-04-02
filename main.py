@@ -93,21 +93,27 @@ def get_data(symbol: str = symbol):
     )
     return barset.df
 
-def current_ADX(data: pd.DataFrame = get_data()):
+def current_ADX(data: pd.DataFrame = None):
     """
     Uses stockstats to calculate the current ADX when given a data DataFrame.
     data argument is optional; by default, uses the get_data function.
     """
+    # Get the data here instead of in default parameters.
+    if data is None: # if it wasn't given in parameters
+        data = get_data()
     data = ss.StockDataFrame.retype(data)
     adx = data[["adx"]]
     current_row = adx.iloc[len(data) - 1]
     return float(current_row[0])
 
-def moving_average(interval: int, data: pd.DataFrame = get_data()):
+def moving_average(interval: int, data: pd.DataFrame = None):
     """
     Locally calculates a 'tailed average' (explained in the read-me) 
         when given data. By default, data DataFrame is taken using get_data.
     """
+    # Get the data here instead of in default parameters.
+    if data is None:
+        data = get_data()
     working_data = data.tail(interval)
     closes = list(working_data['close'])
     average = sum(closes)/len(closes)
@@ -124,13 +130,17 @@ def bot_status():
     else:
         return 'position error in bot_status function.'
 
-def trade_logic(data: pd.DataFrame = get_data()):
+def trade_logic(data: pd.DataFrame = None):
     """
     Takes in a DataFrame (by default, comes from the get_data function)
         and makes buy and sell decisions. Uses multiprocessing to submit
         orders. All parameters are taken from global parameters or the
         outputs of other functions.
     """
+    # Get the data here instead of in default parameters.
+    if data is None:
+        data = get_data()
+
     # Make position variable global for access in various iterations
     global position
 
