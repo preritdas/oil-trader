@@ -1,6 +1,6 @@
 # Oil Trader
 
-Note: The code for this project is currently private and will remain private until I retire the bot. All files will be available in this [GitHub Repository](https://github.com/preritdas/Oil-Trader).
+Note: The code for this project is currently private and will remain private until I retire the bot. All files will be available in this [GitHub repository](https://github.com/preritdas/Oil-Trader).
 
 ----
 
@@ -31,6 +31,11 @@ texts.text_me("The bot has been deployed.", alert_once = True)
 ```
 
 If you, for any reason, want to forcibly alert something that has already been sent with the `alert_once = True` parameter, set `alert_once_override = True` and the message will deliver even if it exists in the database of delivered messages. 
+
+| Parameter | Necessity | Behavior |
+| --- | --- | --- |
+| `alert_once` | Optional | Prevents the texts module from alerting an identical message. |
+| `alert_once_override` | Optional | Forcibly alerts that message even if `alert_once = True` was given earlier.
 
 ### Account Performance
 
