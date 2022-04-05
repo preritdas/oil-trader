@@ -190,6 +190,8 @@ def main():
     # Make alerted_me and market_clock_set variables global
     global alerted_me
     global market_clock_set
+    # Make position global for the close_all_positions() method
+    global position
 
     # Deployment message
     print("Oil trader is alive and ready for action.")
@@ -223,6 +225,7 @@ def main():
         elif 12.9 < time_decimal < 13 and market_open:
             # Close all positions
             alpaca.close_all_positions()
+            print("All positions have been liquidated.")
             position = 0
 
             print("Done trading, sleeping for 5 mins before update.")
