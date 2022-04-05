@@ -120,7 +120,9 @@ def moving_average(interval: int, data: pd.DataFrame = None):
     return average
 
 def bot_status():
-    """Uses position variable to determine if the bot is long, short, or flat."""
+    """
+    Uses position variable to determine if the bot is long, short, or flat.
+    """
     if position == 0:
         return "flat"
     elif position < 0:
@@ -201,7 +203,7 @@ def main():
         time_mins = kit.time_now(int_times = True)[1]
         if 6.75 <= time_decimal < 12.75 and time_mins % 15 == 0:
             # Alpaca clock with limited API calls (once per unique day)
-            if market_clock_set != kit.weekday_int():
+            if market_clock_set != kit.weekday_int(): # it initially doesn't
                 market_clock_set = kit.weekday_int()
                 market_open = alpaca.get_clock().is_open
             # If market is closed, don't do the 'market is open' logic.
@@ -216,9 +218,11 @@ def main():
                 texts.text_me("Oil trader is running trade logic.")
             alerted_me = True
 
-            # Multiprocess the trade logic so as not to mess up timing
-            mp.Process(target = trade_logic).start()
-            print("An iteration of trading logic has completed. Awaiting next iteration.")
+            # Run trade logic
+            trade_logic()
+            print(
+                "An iteration of trading logic has completed. Awaiting next iteration."
+            )
             # Print bot status
             print(f"Oil Trader is currently {bot_status()}.")
             time.sleep(60) # time_mins % 60 will ensure this won't re-run
