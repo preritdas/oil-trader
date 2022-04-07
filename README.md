@@ -43,6 +43,22 @@ If you, for any reason, want to forcibly alert something that has already been s
 
 `account_performance()` allows the bot to automatically calculate how well the underlying account (based on Alpaca API keys) has done in that day and append the data to a CSV file (Data/performance.csv) using `store_performance()`. If the file does not exist, it will create the file. Note that `store_performance()` calls `account_performance()` with a default parameter of `rounding = 4`. 
 
+### SFTP
+
+Further, Oil Trader will automatically SFTP account performance to a remote location every day on market close. It does this by default, due to an argument given to the `store_performance()` function. To disable the feature, call `store_performance()` with `sftp_performance = False`. This is multiprocessed at the end of the day. The credentials for the SFTP module are given in the `_keys.py` file.
+
+```python
+# _keys.py sample sftp section
+
+# SFTP
+sftp_host = '0.0.0.0'  # remote location
+sftp_username = 'root'  # remote user login
+sftp_password = 'oilTraderRocks123!'  # remote user login password
+sftp_remote_dir = "Oil Trader/Data/"  # folder to receive the data
+```
+
+Note that _SFTP is an optional feature_. To prevent Oil Trader from SFTPing performance, without having to change any source code, simply don't provide the values listed in the sample `_keys.py` SFTP section above. If you assign random values to those variables, it will still attempt to SFTP. Don't include those variables at all. 
+
 ### Multiprocessing
 
 Many aspects of Oil Trader don't necessarily have to be completed in the same process as the executor. For example, the process of submitting an order is slightly tedious as many account parameters have to be read, calculated, and altered, all while submitting values to Alpaca's REST API. 
@@ -129,6 +145,12 @@ else:
 ```
 
 This works because the `texts.text_me()` function is written to return a boolean of whether the message went through. It calls Nexmo's API and checks for the first message send (usually there is only one unless a long message is divided into multiple deliveries). If the result is a `'0'` it returns `True`, otherwise it returns `False`. This simplicity allows for a simple success check as shown above.
+
+### sftp.py
+
+Defines a `pysftp.Connection` based on the credentials given in the `#SFTP` section of `_keys.py`. Uses this connection to define an `upload_performance()` function that sends the `Data/performance.csv` file to a remote location, where the remote directory is defined as `sftp_remote_dir` in `_keys.py`. 
+
+To make SFTPing optional, the `sftp.py` module will attempt to define a `pysftp.Connection` on import. If the necessary credentials are not defined or given in `_keys.py` (the solution to prevent the auto-SFTP feature mentioned above), it will catch an `AttributeError` and refuse to define a connection. The `upload_performance()` function will not attempt to SFTP anything anywhere if the `AttributeError` is caught on import. This is true even when the function is called in a different module, such as `main.py`. 
 
 ### requirements.txt
 
