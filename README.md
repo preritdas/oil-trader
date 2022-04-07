@@ -63,12 +63,13 @@ Note that _SFTP is an optional feature_. To prevent Oil Trader from SFTPing perf
 
 Many aspects of Oil Trader don't necessarily have to be completed in the same process as the executor. For example, the process of submitting an order is slightly tedious as many account parameters have to be read, calculated, and altered, all while submitting values to Alpaca's REST API. 
 
-So, certain processes (like order submission) are routed to another computing core to complete independently and simultaneously. This allows the `main.py` executor to continue running without being slowed down. 
+So, certain processes (like order submission) are routed to another computing core to complete independently and simultaneously. This allows the `main.py` executor to continue running without being slowed down. For example, the process of uploading account performance to a remote location has many steps and takes quite a bit of time. The connection must first be defined, then Oil Trader must use the given credentials to connect to the remote directory and open an SFTP connection. It must then remotely navigate to the appropriate directory and then copy the contents of `performance.csv` to a file in that location. As this process isn't directly dependent on any input data, it's routed to another core to run in the background instead of as part of the main execution. 
 
 Processes executed by other cores include:
 - Order submission and execution
 - Trade logic computation
 - Calculating and storing account performance
+- SFTPing account performance to remote directory
 
 ### Ideal Quantity Calculation
 
