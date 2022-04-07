@@ -16,7 +16,14 @@ def upload_performance():
     """
     Puts the performance CSV, from the local Data/ folder, where indicated
     in the _keys.py module in the SFTP section. 
+
+    If deployment is successful, the function returns True. If not, it 
+    returns False.
     """
-    with pysftp_connection as sftp:
-        with sftp.cd(_keys.sftp_remote_dir):
-            sftp.put('Data/performance.csv')
+    try:
+        with pysftp_connection as sftp:
+            with sftp.cd(_keys.sftp_remote_dir):
+                sftp.put('Data/performance.csv')
+        return True
+    except:
+        return False
