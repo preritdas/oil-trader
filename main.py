@@ -7,10 +7,14 @@ import pandas as pd
 # Local imports
 import time
 import math
-import _keys
-import texts
 import multiprocessing as mp
 import os
+
+# Project modules
+import _keys
+import texts
+import sftp
+
 
 # ---- GLOBAL PARAMETERS ----
 symbol = 'USO'
@@ -28,6 +32,7 @@ alpaca = alpaca_api.REST(
     secret_key = _keys.alpaca_API_secret,
     base_url = _keys.alpaca_endpoint
 )
+
 
 def account_performance(rounding: int):
     """
@@ -250,6 +255,9 @@ def main():
 
             # Update account performance with multiprocessing
             mp.Process(target = store_performance).start()
+            # Upload account performance using SFTP and multiprocessing
+            mp.Process(target = sftp.upload_performance).start()
+
 
 if __name__ == "__main__":
     main()
