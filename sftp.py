@@ -15,7 +15,7 @@ except AttributeError:  # if credentials weren't given in _keys.py
     pysft_connection = None
 
 
-def upload_performance():
+def upload_performance(print_success: bool = True):
     """
     Puts the performance CSV, from the local Data/ folder, where indicated
     in the _keys.py module in the SFTP section. 
@@ -31,10 +31,10 @@ def upload_performance():
         with pysftp_connection as sftp:
             with sftp.cd(_keys.sftp_remote_dir):
                 sftp.put('Data/performance.csv')
+        if print_success:
+            print('SFTP was successful.')
         return True
     except:
+        if print_success:
+            print('SFTP failed.')
         return False
-
-
-if __name__ == "__main__":
-    print(_keys.invalid)

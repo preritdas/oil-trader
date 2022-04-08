@@ -45,7 +45,7 @@ def account_performance(rounding: int):
     percent = 100 * proportion
     return round(percent, rounding)
 
-def store_performance(sftp_peformance: bool = True):
+def store_performance(sftp_peformance: bool = True, sftp_success: bool = True):
     """
     Finds (creates if non-existent) a performance.csv file to write 
         account performance to every day.
@@ -62,7 +62,7 @@ def store_performance(sftp_peformance: bool = True):
 
     # SFTP
     if sftp_peformance:
-        sftp.upload_performance()
+        sftp.upload_performance(print_success = sftp_success)
 
 def ideal_quantity(allocation: float = ideal_allocation, symbol: str = symbol):
     """
@@ -258,7 +258,7 @@ def main():
             alerted_me = False
 
             # Update account performance with SFTP, using multiprocessing
-            mp.Process(target = store_performance, args = (True,)).start()
+            mp.Process(target = store_performance, args = (True,True)).start()
 
 
 if __name__ == "__main__":
