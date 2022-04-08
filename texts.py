@@ -31,5 +31,7 @@ def text_me(message: str, alert_once: bool = False, alert_once_override: bool = 
     # Alert_once logic
     if alert_once:
         already_texted.append(message)
-
-    return True if response["messages"][0]["status"] == '0' else False
+    try:
+        return True if response["messages"][0]["status"] == '0' else False
+    except TypeError as e: # TypeError: byte indices must be integers or slices, not str
+        return None
