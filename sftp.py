@@ -1,7 +1,7 @@
 # Non-local imports
 import pysftp
 
-# Local imports
+# Project modules 
 import _keys
 
 # Define the pysftp connection
