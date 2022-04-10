@@ -54,7 +54,7 @@ def store_performance(sftp_peformance: bool = True, sftp_success: bool = True):
     if not os.path.isfile('Data/performance.csv'):
         with open('Data/performance.csv', 'a') as f:
             # Create the file and write without a new line
-            f.write(f'{kit.today_date()},{performance}')
+            f.write(f'Date,Performance\n{kit.today_date()},{performance}')
     else:
         with open('Data/performance.csv', 'a') as f:
             # Write with a new line
