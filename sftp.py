@@ -1,8 +1,12 @@
 # Non-local imports
 import pysftp
 
+# Local imports
+import logging
+
 # Project modules 
 import _keys
+
 
 # Define the pysftp connection
 try:
@@ -32,9 +36,9 @@ def upload_performance(print_success: bool = True):
             with sftp.cd(_keys.sftp_remote_dir):
                 sftp.put('Data/performance.csv')
         if print_success:
-            print('SFTP was successful.')
+            logging.info('SFTP was successful.')
         return True
     except:
         if print_success:
-            print('SFTP failed.')
+            logging.info('SFTP failed.')
         return False
