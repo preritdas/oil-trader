@@ -243,7 +243,6 @@ def main():
 
             print("Done trading, sleeping for 5 mins before update.")
             time.sleep(0.1 * 3600) # so it doesn't run again
-            print("Done trading for the day.")
             text_success = texts.text_me(
                 f"Oil trader is done for the day. Today's performance: \
                     {account_performance(rounding = 4)}%."
