@@ -6,6 +6,13 @@ import logging
 
 # Project modules 
 import _keys
+from main import logging_level
+
+
+# Instantiate logger
+logging.basicConfig(
+    level = logging_level
+)
 
 
 # Define the pysftp connection
