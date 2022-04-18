@@ -9,7 +9,6 @@ import time
 import math
 import multiprocessing as mp
 import os
-import logging
 
 # Project modules
 import _keys
@@ -20,18 +19,12 @@ import sftp
 # ---- GLOBAL PARAMETERS ----
 symbol = 'USO'
 timeframe = 15 # minutes
-ideal_allocation = 0.05  # position size
-logging_level = logging.DEBUG  # display all logs
+ideal_allocation = 0.05 # position size
 
 # Global variables
 position = 0
 alerted_me = False
-market_clock_set = 8  # non weekday value
-
-# Instantiate logger
-logging.basicConfig(
-    level = logging_level
-)
+market_clock_set = 8 # non weekday value
 
 # Instantiate Alpaca API
 alpaca = alpaca_api.REST(
@@ -168,7 +161,7 @@ def trade_logic(data: pd.DataFrame = None):
         and position < 1
     ):
         # Buy
-        logging.info(f"Taking a trade. Long {symbol}.")
+        print(f"Taking a trade. Long {symbol}.")
         texts.text_me(f"Oil trader went long on {symbol}.")
         # Multiprocessing
         def buy_order():
@@ -188,7 +181,7 @@ def trade_logic(data: pd.DataFrame = None):
         and position > -1
     ):
         # Sell
-        logging.info(f"Taking a trade. Short {symbol}.")
+        print(f"Taking a trade. Short {symbol}.")
         texts.text_me(f"Oil trader went short on {symbol}.")
         # Multiprocessing
         def sell_order():
@@ -212,7 +205,7 @@ def main():
     global position
 
     # Deployment message
-    logging.info("Oil trader is alive and ready for action.")
+    print("Oil trader is alive and ready for action.")
 
     while True:
         time_decimal = kit.time_decimal()
@@ -227,7 +220,7 @@ def main():
                 continue
 
             # MAIN PROGRAM MARKET IS OPEN.
-            logging.debug('Oil trader is running trade logic.')
+            print('Oil trader is running trade logic.')
 
             # inform me of being alive in the morning
             if alerted_me == False:
@@ -236,29 +229,30 @@ def main():
 
             # Run trade logic
             trade_logic()
-            logging.debug(
+            print(
                 "An iteration of trading logic has completed. Awaiting next iteration."
             )
             # Print bot status
-            logging.info(f"Oil Trader is currently {bot_status()}.")
+            print(f"Oil Trader is currently {bot_status()}.")
             time.sleep(60) # time_mins % 60 will ensure this won't re-run
         elif 12.9 < time_decimal < 13 and market_open:
             # Close all positions
             alpaca.close_all_positions()
-            logging.info("All positions have been liquidated.")
+            print("All positions have been liquidated.")
             position = 0
 
-            logging.info("Done trading, sleeping for 5 mins before update.")
+            print("Done trading, sleeping for 5 mins before update.")
             time.sleep(0.1 * 3600) # so it doesn't run again
+            print("Done trading for the day.")
             text_success = texts.text_me(
                 f"Oil trader is done for the day. Today's performance: \
                     {account_performance(rounding = 4)}%."
             )
             # Message delivery success
             if text_success: 
-                logging.info("Update has been sent successfully.") 
+                print("Update has been sent successfully.") 
             else:
-                logging.info("Unsuccessful delivery.")
+                print("Unsuccessful delivery.")
 
             # Change alerted_me so it alerts next morning
             alerted_me = False
