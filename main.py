@@ -18,8 +18,8 @@ import sftp
 
 # ---- GLOBAL PARAMETERS ----
 symbol = 'USO'
-timeframe = 15 # minutes
-ideal_allocation = 0.05 # position size
+timeframe = 15  # minutes
+ideal_allocation = 0.05  # position size
 
 # Global variables
 position = 0
