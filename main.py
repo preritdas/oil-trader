@@ -156,7 +156,7 @@ def trade_logic(data: pd.DataFrame = None):
     global position
 
     if(
-        current_price() > moving_average(interval = timeframe, data = data) 
+        current_price() < moving_average(interval = timeframe, data = data) 
         and current_ADX(data = data) > 35 
         and position < 1
     ):
@@ -176,7 +176,7 @@ def trade_logic(data: pd.DataFrame = None):
         position += 1
 
     elif(
-        current_price() < moving_average(interval = timeframe, data = data) 
+        current_price() > moving_average(interval = timeframe, data = data) 
         and current_ADX(data = data) > 35 
         and position > -1
     ):
