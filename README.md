@@ -1,6 +1,9 @@
+https://img.shields.io/badge/maintenance-deprecated-inactive
+
+
 # Oil Trader
 
-Note: The code for this project is currently private and will remain private until I retire the bot. All files will be available in this [GitHub repository](https://github.com/preritdas/Oil-Trader).
+Note: This bot was retired long ago. It was one of my first projects; very lightweight and designed with ineffective principles. 
 
 ----
 
