@@ -1,4 +1,4 @@
-https://img.shields.io/badge/maintenance-deprecated-inactive
+![maintenance](https://img.shields.io/badge/maintenance-deprecated-inactive)
 
 
 # Oil Trader
